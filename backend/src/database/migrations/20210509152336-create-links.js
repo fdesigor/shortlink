@@ -15,6 +15,7 @@ module.exports = {
       link: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
         validate: {
           notEmpty: true,
           len: [0, 255]
