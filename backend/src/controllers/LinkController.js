@@ -2,7 +2,7 @@ const Link = require('../models/Link')
 
 module.exports = {
     async index(req, res) {
-        res.json({ Hello: 'World!' }, 200)
+        res.json({ Hello: 'ShortLink!' }, 200)
     },
 
     async store(req, res) {
@@ -14,10 +14,45 @@ module.exports = {
             result.push(characters.charAt(Math.floor(Math.random() * characters.length)));
         }
 
-        res.json({ link: url, shortlink: result.join(''), count: 0 }, 201)
+        try {
+            await Link.create({ link: url, shortlink: result.join(''), count: 0 })
+            .then( item => {
+                return res.status(201).json(item)
+            })
+            .catch(error => {
+                return res.status(400).json(error)
+            });
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+
+        return res.status(500).json({ error: "Internal Server Error" })
     },
 
     async redirect(req, res) {
-        res.json({ Hello: 'Redirect!' }, 200)
+        const { link } = req.params
+
+        const item = await Link.findOne({
+            where: { shortlink: link },
+        })
+
+        if (!item)
+            res.status(404).json({})
+
+        await Link.increment('count', { where: { shortlink: link }});
+        res.redirect(item.link)
+    },
+
+    async count(req, res) {
+        const { link } = req.params
+
+        const item = await Link.findOne({
+            where: { shortlink: link },
+        })
+
+        if (!item)
+            res.status(404).json({})
+
+        res.status(200).json({ count: item.count })
     },
 }
