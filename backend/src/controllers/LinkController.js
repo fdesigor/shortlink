@@ -2,7 +2,12 @@ const Link = require('../models/Link')
 
 module.exports = {
     async index(req, res) {
-        res.json({ Hello: 'ShortLink!' }, 200)
+        const items = await Link.findAll()
+
+        if (!items)
+            res.status(404).json({})
+
+        res.status(200).json(items)
     },
 
     async store(req, res) {
@@ -25,8 +30,6 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(error)
         }
-
-        return res.status(500).json({ error: "Internal Server Error" })
     },
 
     async redirect(req, res) {
