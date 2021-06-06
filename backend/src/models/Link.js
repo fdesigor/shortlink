@@ -6,18 +6,13 @@ class Link extends Model {
             link: DataTypes.STRING,
             shortlink: DataTypes.STRING
         }, {
-            scopes: {
-                counts() {
-                    return 1
-                },
-            },
             sequelize
-        })
+        });
     }
 
-    // static associate(models) {
-    //     this.hasMany(models.Count, { foreignKey: 'count_id', as: 'counts' })
-    // }
+    static associate(models) {
+        this.hasMany(models.Count, { foreignKey: 'link_id', as: 'counts' });
+    }
 }
 
 module.exports = Link;

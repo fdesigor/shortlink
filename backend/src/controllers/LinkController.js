@@ -22,22 +22,22 @@ module.exports = {
 
         try {
             await Link.create({ link: url, shortlink: result.join('') })
-            .then( item => {
-                return res.status(201).json(item)
-            })
-            .catch(error => {
-                return res.status(400).json(error)
-            });
+                .then(item => {
+                    return res.status(201).json(item)
+                })
+                .catch(error => {
+                    return res.status(400).json(error)
+                });
         } catch (error) {
             return res.status(500).json(error)
         }
     },
 
     async redirect(req, res) {
-        const { link } = req.params
+        const { code } = req.params
 
         const item = await Link.findOne({
-            where: { shortlink: link },
+            where: { shortlink: code },
         })
 
         if (!item)
@@ -48,20 +48,21 @@ module.exports = {
         } catch (error) {
             return res.status(500).json(error)
         }
-        
+
         res.redirect(item.link)
     },
 
     async count(req, res) {
-        const { link } = req.params
+        const { code } = req.params
 
         const item = await Link.findOne({
-            where: { shortlink: link },
+            where: { shortlink: code },
+            include: ['counts']
         })
 
         if (!item)
             res.status(404).json({})
 
-        res.status(200).json({ count: item.scope('counts') })
+        res.status(200).json({ count: item.counts.length })
     },
 }

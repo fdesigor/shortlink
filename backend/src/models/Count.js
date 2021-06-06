@@ -9,9 +9,9 @@ class Count extends Model {
         })
     }
 
-    // static associate(models) {
-    //     this.belongsTo(models.Link, { foreignKey: 'link_id', as: 'link' })
-    // }
+    static associate(models) {
+        this.belongsTo(models.Link, { foreignKey: 'link_id', as: 'link' })
+    }
 }
 
 module.exports = Count;
