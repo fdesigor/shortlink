@@ -1,3 +1,4 @@
+const Count = require('../models/Count')
 const Link = require('../models/Link')
 
 module.exports = {
@@ -20,7 +21,7 @@ module.exports = {
         }
 
         try {
-            await Link.create({ link: url, shortlink: result.join(''), count: 0 })
+            await Link.create({ link: url, shortlink: result.join('') })
             .then( item => {
                 return res.status(201).json(item)
             })
@@ -42,7 +43,12 @@ module.exports = {
         if (!item)
             res.status(404).json({})
 
-        await Link.increment('count', { where: { shortlink: link }});
+        try {
+            await Count.create({ link_id: item.id });
+        } catch (error) {
+            return res.status(500).json(error)
+        }
+        
         res.redirect(item.link)
     },
 
@@ -56,6 +62,6 @@ module.exports = {
         if (!item)
             res.status(404).json({})
 
-        res.status(200).json({ count: item.count })
+        res.status(200).json({ count: item.scope('counts') })
     },
 }
